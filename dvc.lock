@@ -1,0 +1,315 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: python src/ingest.py --zip-name athletes.zip --csv-name athletes.csv
+    deps:
+    - path: src/ingest.py
+      hash: md5
+      md5: e7b5cdcbcc873a466099201dacbb1490
+      size: 3654
+    outs:
+    - path: data/raw/crossfit.csv
+      hash: md5
+      md5: ade8057a9ad4350dfade9180f021a96d
+      size: 71546909
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+    - path: data/raw/crossfit.csv
+      hash: md5
+      md5: ade8057a9ad4350dfade9180f021a96d
+      size: 71546909
+    - path: src/preprocess.py
+      hash: md5
+      md5: 63eb187388ab88f1279b08594cc4cf4f
+      size: 5218
+    params:
+      params.yaml:
+        preprocess.outlier_zscore: 3.0
+    outs:
+    - path: data/processed/crossfit.csv
+      hash: md5
+      md5: 5d91a9e852ca7754e2e5ae33722a6230
+      size: 10929537
+  eda:
+    cmd: python src/eda.py
+    deps:
+    - path: data/processed/crossfit.csv
+      hash: md5
+      md5: 5d91a9e852ca7754e2e5ae33722a6230
+      size: 10929537
+    - path: data/raw/crossfit.csv
+      hash: md5
+      md5: ade8057a9ad4350dfade9180f021a96d
+      size: 71546909
+    - path: src/eda.py
+      hash: md5
+      md5: 953945da86ad96509d8687feeaf01c18
+      size: 5244
+    outs:
+    - path: outputs/eda
+      hash: md5
+      md5: ada4addbe785b77f2d3051b48c4e5226.dir
+      size: 349475
+      nfiles: 23
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+    - path: data/processed/crossfit.csv
+      hash: md5
+      md5: 5d91a9e852ca7754e2e5ae33722a6230
+      size: 10929537
+    - path: src/feature_engineering.py
+      hash: md5
+      md5: 6b2f373d5c525ffff68e51cd0559df8a
+      size: 9246
+    outs:
+    - path: data/feature_store/crossfit_features.parquet
+      hash: md5
+      md5: f3265277abfc5b1006174fe239220244
+      size: 461279
+    - path: data/processed/crossfit_features.csv
+      hash: md5
+      md5: 05df950b2031bccc9dda3f2b39e544dc
+      size: 2882888
+  split_data:
+    cmd: python src/split_data.py
+    deps:
+    - path: data/feature_store/online_store.db
+      hash: md5
+      md5: b8411ea68fc99c73cca7f7f1a2af2dbb
+      size: 81760256
+    - path: data/feature_store/registry.db
+      hash: md5
+      md5: 17927b69610e52aa42627f092d4a7b30
+      size: 4136
+    - path: data/processed/crossfit_features.csv
+      hash: md5
+      md5: 05df950b2031bccc9dda3f2b39e544dc
+      size: 2882888
+    - path: random_seed.py
+      hash: md5
+      md5: b7e97b79b2c4e9773b26a1e0c9d9e493
+      size: 1344
+    - path: src/split_data.py
+      hash: md5
+      md5: 64c425fecec13176948d0c021c2c9643
+      size: 7708
+    params:
+      params.yaml:
+        split.random_seed: 42
+        split.test_size: 0.2
+    outs:
+    - path: data/test/test.csv
+      hash: md5
+      md5: 54e64b03530356a1be7747f1c2fe3522
+      size: 407948
+    - path: data/train/train.csv
+      hash: md5
+      md5: 73073cd36b65d1c5a53e89d9226c702a
+      size: 1631023
+    - path: reports/split_documentation.txt
+      hash: md5
+      md5: 03df35ce5b82bffd07c5c663849d5edd
+      size: 485
+  train:
+    cmd: python src/train.py
+    deps:
+    - path: data/train/train.csv
+      hash: md5
+      md5: 73073cd36b65d1c5a53e89d9226c702a
+      size: 1631023
+    - path: random_seed.py
+      hash: md5
+      md5: b7e97b79b2c4e9773b26a1e0c9d9e493
+      size: 1344
+    - path: src/train.py
+      hash: md5
+      md5: 6a2832ae83bf202e5ee16bc555572183
+      size: 4889
+    params:
+      params.yaml:
+        train.hyperparameters:
+          n_estimators: 200
+          max_depth: 6
+          learning_rate: 0.05
+        train.model_type: xgboost
+        train.random_seed: 42
+    outs:
+    - path: models/model.pkl
+      hash: md5
+      md5: f36e3339d41a4df94b2fd79e2042dafc
+      size: 878376
+  evaluate:
+    cmd: python src/evaluate.py
+    deps:
+    - path: data/test/test.csv
+      hash: md5
+      md5: 54e64b03530356a1be7747f1c2fe3522
+      size: 407948
+    - path: models/model.pkl
+      hash: md5
+      md5: f36e3339d41a4df94b2fd79e2042dafc
+      size: 878376
+    - path: src/evaluate.py
+      hash: md5
+      md5: 796a08533efaffbb434d601e93b7d6b8
+      size: 2702
+    outs:
+    - path: reports/evaluation.txt
+      hash: md5
+      md5: bbd2338c28f3c93b3e6a01847a8a7705
+      size: 274
+  train_v1_baseline:
+    cmd: python src/train_v1_baseline.py
+    deps:
+    - path: data/raw/crossfit.csv
+      hash: md5
+      md5: ade8057a9ad4350dfade9180f021a96d
+      size: 71546909
+    - path: random_seed.py
+      hash: md5
+      md5: b7e97b79b2c4e9773b26a1e0c9d9e493
+      size: 1344
+    - path: src/train_v1_baseline.py
+      hash: md5
+      md5: 014c774009a1124267eeddca605d47ec
+      size: 7809
+    params:
+      params.yaml:
+        split.test_size: 0.2
+        train.hyperparameters:
+          n_estimators: 200
+          max_depth: 6
+          learning_rate: 0.05
+        train.model_type: xgboost
+        train.random_seed: 42
+    outs:
+    - path: models/model_v1_raw.pkl
+      hash: md5
+      md5: 2effb28d6abfb10e763d199ae54c38eb
+      size: 592863
+    - path: reports/evaluation_v1_raw.txt
+      hash: md5
+      md5: c2f43533fa37c70a8406cfd7bd724438
+      size: 516
+  compare:
+    cmd: python src/compare_versions.py
+    deps:
+    - path: reports/evaluation_v1.txt
+      hash: md5
+      md5: df93d408805de30a41794f0fc3deb4bb
+      size: 296
+    - path: reports/evaluation_v2.txt
+      hash: md5
+      md5: 26b551bead38977f4981bf46f1ce1fca
+      size: 297
+    - path: src/compare_versions.py
+      hash: md5
+      md5: 7f3805721809bb737140e398fbbe1692
+      size: 2557
+    outs:
+    - path: reports/model_comparison.txt
+      hash: md5
+      md5: e8ac7b7f22f99b3c57b5d1bad142d781
+      size: 560
+  feature_store_setup:
+    cmd: python src/feature_store_setup.py
+    deps:
+    - path: data/feature_store/crossfit_features.parquet
+      hash: md5
+      md5: f3265277abfc5b1006174fe239220244
+      size: 461279
+    - path: feature_definitions.py
+      hash: md5
+      md5: 6e490e204f6375c3c66f4bba1490e54b
+      size: 3228
+    - path: feature_store.yaml
+      hash: md5
+      md5: 4acb169e559cfa79bcfee59f6f060a63
+      size: 202
+    - path: src/feature_store_setup.py
+      hash: md5
+      md5: 4cfb4359030a851ee45e8a12683e7d42
+      size: 1785
+    outs:
+    - path: data/feature_store/online_store.db
+      hash: md5
+      md5: b8411ea68fc99c73cca7f7f1a2af2dbb
+      size: 81760256
+    - path: data/feature_store/registry.db
+      hash: md5
+      md5: 17927b69610e52aa42627f092d4a7b30
+      size: 4136
+  experiments:
+    cmd: python src/run_experiments.py
+    deps:
+    - path: data/feature_store/online_store.db
+      hash: md5
+      md5: b8411ea68fc99c73cca7f7f1a2af2dbb
+      size: 81760256
+    - path: data/feature_store/registry.db
+      hash: md5
+      md5: 17927b69610e52aa42627f092d4a7b30
+      size: 4136
+    - path: data/processed/crossfit_features.csv
+      hash: md5
+      md5: 05df950b2031bccc9dda3f2b39e544dc
+      size: 2882888
+    - path: feature_definitions.py
+      hash: md5
+      md5: 6e490e204f6375c3c66f4bba1490e54b
+      size: 3228
+    - path: params.yaml
+      hash: md5
+      md5: 8fad20db93dec5491127066ac6b702f2
+      size: 812
+    - path: random_seed.py
+      hash: md5
+      md5: 5c16e0e1e4e52dc762d76f61df9b87a3
+      size: 641
+    - path: src/evaluate.py
+      hash: md5
+      md5: 0582273d0e25cdd7f5b2a75c36f0000b
+      size: 4463
+    - path: src/run_experiments.py
+      hash: md5
+      md5: 0a0940dd81409ecdad1d37c20ceb0f8d
+      size: 2517
+    - path: src/split_data.py
+      hash: md5
+      md5: 28968d2f0c067735e6df61d4478426de
+      size: 10679
+    - path: src/train.py
+      hash: md5
+      md5: ad52d232a0e24b559e2a93080a2e22ce
+      size: 7779
+    outs:
+    - path: data/test/test.csv
+      hash: md5
+      md5: 05a0d7f811ab503b4f3b88e8e12c3798
+      size: 407948
+    - path: data/train/train.csv
+      hash: md5
+      md5: 37682d4250cfcf205c20ffbdd1908cc0
+      size: 1631023
+    - path: models/model_v1.pkl
+      hash: md5
+      md5: 908e0fa776baa80806a8768b93f0359b
+      size: 859866
+    - path: models/model_v2.pkl
+      hash: md5
+      md5: af0bb328406aac9e95123cf4d0a01b62
+      size: 860446
+    - path: reports/evaluation_v1.txt
+      hash: md5
+      md5: df93d408805de30a41794f0fc3deb4bb
+      size: 296
+    - path: reports/evaluation_v2.txt
+      hash: md5
+      md5: 26b551bead38977f4981bf46f1ce1fca
+      size: 297
+    - path: reports/split_documentation.txt
+      hash: md5
+      md5: 61d24718c0f5c6e87c3156b27664ae2d
+      size: 485
