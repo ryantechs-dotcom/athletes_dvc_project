@@ -1,0 +1,7 @@
+src/
+data/
+models/
+reports/
+outputs/
+mlruns/
+.dvc/

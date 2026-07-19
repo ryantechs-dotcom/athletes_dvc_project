@@ -1,0 +1,31 @@
+# Core data handling
+pandas==2.2.2
+numpy==1.26.4
+pyyaml==6.0.1
+
+# Modeling
+scikit-learn==1.5.1
+xgboost==2.1.1
+
+# MLOps: experiment tracking, model registry, feature store
+mlflow==2.14.1
+feast==0.40.1
+pyarrow==15.0.2
+
+# Model persistence
+joblib==1.4.2
+
+# EDA / plotting (used in eda_v1.ipynb, eda_v2.ipynb)
+matplotlib==3.9.1
+seaborn==0.13.2
+
+# Notebooks
+jupyter==1.0.0
+ipykernel==6.29.5
+
+# Pipeline / reproducibility
+dvc==3.55.2
+pathspec<0.12
+
+# Code quality (reports/pylint_report.txt)
+pylint==3.2.6

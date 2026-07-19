@@ -1,0 +1,11 @@
+Evaluation Report
+==================================================
+
+Feature version:   v2
+Test set size:     5822
+Feature count:     11
+Target:            total_lift (deadlift + candj + snatch + backsq)
+
+RMSE:              151.523
+MAE:               117.900
+R^2:               0.7008

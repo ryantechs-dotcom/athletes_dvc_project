@@ -1,0 +1,12 @@
+Feature Version Comparison (v1 vs v2, via MLflow)
+============================================================
+
+Metric                        v1              v2    Diff (v2-v1)
+RMSE                     151.523         151.523           0.000
+MAE                      117.900         117.900           0.000
+R^2                       0.7008          0.7008          0.0000
+
+Feature count:  v1=5   v2=11
+MLflow run IDs: v1=bc0350443cbb4a61915761a042462207   v2=251688563ae242bb91eb8e55e371f7e6
+
+RMSE was unchanged by 0.000 (+0.0%) going from v1 to v2.

@@ -1,0 +1,81 @@
+stages:
+  ingest:
+    cmd: python src/ingest.py --zip-name athletes.zip --csv-name athletes.csv
+    deps:
+      - src/ingest.py
+    outs:
+      - data/raw/crossfit.csv
+
+  preprocess:
+    cmd: python src/preprocess.py
+    deps:
+      - src/preprocess.py
+      - data/raw/crossfit.csv
+    params:
+      - preprocess.outlier_zscore
+    outs:
+      - data/processed/crossfit.csv
+
+  eda:
+    cmd: python src/eda.py
+    deps:
+      - src/eda.py
+      - data/raw/crossfit.csv
+      - data/processed/crossfit.csv
+    outs:
+      - outputs/eda
+
+  feature_engineering:
+    cmd: python src/feature_engineering.py
+    deps:
+      - src/feature_engineering.py
+      - data/processed/crossfit.csv
+    outs:
+      - data/processed/crossfit_features.csv
+      - data/feature_store/crossfit_features.parquet
+
+  feature_store_setup:
+    cmd: python src/feature_store_setup.py
+    deps:
+      - src/feature_store_setup.py
+      - feature_definitions.py
+      - feature_store.yaml
+      - data/feature_store/crossfit_features.parquet
+    outs:
+      - data/feature_store/registry.db
+      - data/feature_store/online_store.db
+
+  experiments:
+    cmd: python src/run_experiments.py
+    deps:
+      - src/run_experiments.py
+      - src/split_data.py
+      - src/train.py
+      - src/evaluate.py
+      - random_seed.py
+      - feature_definitions.py
+      - params.yaml
+      - data/processed/crossfit_features.csv
+      - data/feature_store/registry.db
+      - data/feature_store/online_store.db
+    outs:
+      - models/model_v1.pkl
+      - models/model_v2.pkl
+      - data/train/train.csv
+      - data/test/test.csv
+      - reports/split_documentation.txt
+    metrics:
+      - reports/evaluation_v1.txt:
+          cache: false
+      - reports/evaluation_v2.txt:
+          cache: false
+
+  compare:
+    cmd: python src/compare_versions.py
+    deps:
+      - src/compare_versions.py
+      - reports/evaluation_v1.txt
+      - reports/evaluation_v2.txt
+    outs:
+      - reports/model_comparison.txt:
+          cache: false

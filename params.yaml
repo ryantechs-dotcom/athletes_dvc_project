@@ -1,0 +1,39 @@
+preprocess:
+  drop_na_threshold: 0.3
+  outlier_zscore: 3.0
+features:
+  version: v1
+split:
+  test_size: 0.2
+train:
+  model_type: xgboost
+  random_seed: 42
+  hyperparameters:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.05
+experiments:
+- name: v1_baseline_small
+  feature_version: v1
+  hyperparameters:
+    n_estimators: 100
+    max_depth: 3
+    learning_rate: 0.05
+- name: v1_baseline_large
+  feature_version: v1
+  hyperparameters:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.05
+- name: v2_engineered_small
+  feature_version: v2
+  hyperparameters:
+    n_estimators: 100
+    max_depth: 3
+    learning_rate: 0.05
+- name: v2_engineered_large
+  feature_version: v2
+  hyperparameters:
+    n_estimators: 200
+    max_depth: 6
+    learning_rate: 0.05

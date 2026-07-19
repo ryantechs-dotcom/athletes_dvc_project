@@ -1,0 +1,7 @@
+project: crossfit_feature_store
+provider: local
+registry: data/feature_store/registry.db
+online_store:
+  type: sqlite
+  path: data/feature_store/online_store.db
+entity_key_serialization_version: 2
