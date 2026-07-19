@@ -44,14 +44,14 @@ stages:
       size: 71546909
     - path: src/eda.py
       hash: md5
-      md5: 953945da86ad96509d8687feeaf01c18
-      size: 5244
+      md5: 08b396c2f9d0c408a3eefe59629f6a5e
+      size: 5323
     outs:
     - path: outputs/eda
       hash: md5
-      md5: ada4addbe785b77f2d3051b48c4e5226.dir
-      size: 349475
-      nfiles: 23
+      md5: 61a9a3c631761e27032f257075512e66.dir
+      size: 492148
+      nfiles: 31
   feature_engineering:
     cmd: python src/feature_engineering.py
     deps:
@@ -66,11 +66,11 @@ stages:
     outs:
     - path: data/feature_store/crossfit_features.parquet
       hash: md5
-      md5: f3265277abfc5b1006174fe239220244
+      md5: 20b59fee9d44097f217bd87133f57633
       size: 461279
     - path: data/processed/crossfit_features.csv
       hash: md5
-      md5: 05df950b2031bccc9dda3f2b39e544dc
+      md5: 0201d073db1c14c0092108fb29167aef
       size: 2882888
   split_data:
     cmd: python src/split_data.py
@@ -211,14 +211,14 @@ stages:
     outs:
     - path: reports/model_comparison.txt
       hash: md5
-      md5: e8ac7b7f22f99b3c57b5d1bad142d781
+      md5: ece1a828af444fbae6f9e58a221420a5
       size: 560
   feature_store_setup:
     cmd: python src/feature_store_setup.py
     deps:
     - path: data/feature_store/crossfit_features.parquet
       hash: md5
-      md5: f3265277abfc5b1006174fe239220244
+      md5: 20b59fee9d44097f217bd87133f57633
       size: 461279
     - path: feature_definitions.py
       hash: md5
@@ -235,26 +235,26 @@ stages:
     outs:
     - path: data/feature_store/online_store.db
       hash: md5
-      md5: b8411ea68fc99c73cca7f7f1a2af2dbb
+      md5: aa87916ca92bb837e2570ffa547e9bd9
       size: 81760256
     - path: data/feature_store/registry.db
       hash: md5
-      md5: 17927b69610e52aa42627f092d4a7b30
-      size: 4136
+      md5: b297c531af750e7e41e46a5c4fb45ddf
+      size: 4109
   experiments:
     cmd: python src/run_experiments.py
     deps:
     - path: data/feature_store/online_store.db
       hash: md5
-      md5: b8411ea68fc99c73cca7f7f1a2af2dbb
+      md5: aa87916ca92bb837e2570ffa547e9bd9
       size: 81760256
     - path: data/feature_store/registry.db
       hash: md5
-      md5: 17927b69610e52aa42627f092d4a7b30
-      size: 4136
+      md5: b297c531af750e7e41e46a5c4fb45ddf
+      size: 4109
     - path: data/processed/crossfit_features.csv
       hash: md5
-      md5: 05df950b2031bccc9dda3f2b39e544dc
+      md5: 0201d073db1c14c0092108fb29167aef
       size: 2882888
     - path: feature_definitions.py
       hash: md5
